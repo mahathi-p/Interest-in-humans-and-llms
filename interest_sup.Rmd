@@ -1,0 +1,184 @@
+---
+title: "interest_sup"
+author: "Chiara Gambi"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r, code = readLines("interest_main.R"), include=FALSE}
+```
+
+This file contains the Supplementary Materials for Parvatham, Tann, Pergola, & Gambi (2024). Conversational Interest between teachers and second
+language learners evaluated by human and LLMs.
+
+## Linguistic predictors of human interest ratings.
+
+### Concreteness
+
+```{r concreteness_int, fig.cap= "Figure S1 - Correlations between the two concreteness measures (_megahr and _mrc) and unrounded average human interestingness ratings. Correlation coefficients and significance are based on Kendall's tau non-parametric test.", echo=FALSE, warning=FALSE}
+ggplotly(corr_matrix_plot_conc_int)
+```
+
+```{r concreteness_expint, fig.cap = "Figure S2 - Correlations between the two concreteness measures (_megahr and _mrc) and unrounded average human expected interestingness ratings. Correlation coefficients and significance are based on Kendall's tau non-parametric test.", echo=FALSE, warning=FALSE}
+ggplotly(corr_matrix_plot_conc_expint)
+```
+
+### Comprehensibility
+This table summarizes the outcome of feature-level model comparisons between linear regression models containing only a linear effect or both a linear and a quadratic effect (linear and quadratic effects were always orthogonal to each other). Separate comparisons were conducted for each feature and for models with either average interestingness (Int) or average expected interestingness (Exp Int) as outcome variables. Model comparison p values < .05 indicate the model including both a linear and quadratic predictor is better according to a likelihood ratio test (function anova() in R).
+```{r comp_selection, echo=FALSE}
+kable_minimal(kable(complexity_var, digits = 4, col.names = c("Feature","Int (p value)", "Exp Int (p value)","Int (winning model)","Exp Int (winning model"), caption = "Table S1 - Feature-level model comparisons for comprehensibility metrics"))
+```
+
+### Uptake
+Figure S3 shows effects of teacher_uptake_student (A) and student_uptake_teacher (B) on average interestingness as a function of whether the first speaker displayed on a page was the teacher or the student.
+```{r uptake_intA, fig.cap = "Figure S3A - Interestingness as a function of teacher uptake student", echo=FALSE, warning=FALSE}
+all$tushl<-ifelse(all$teacher_uptake_student>0.95,"high","low")
+all$suthl<-ifelse(all$student_uptake_teacher>0.95,"high","low")
+ggplot(all,aes(y=Int_avg,x=first_role,col=tushl))+geom_boxplot()+
+stat_summary(aes(y=Int_avg,x=first_role,shape=tushl),fun="mean", geom="point", size=3, position=position_dodge())+ xlab("First speaker on page") + ylab("Interestingness") + guides(col=guide_legend(title="Teacher uptake student"),shape=guide_legend(title="Teacher uptake student"))
+```
+
+```{r uptake_intB, fig.cap = "Figure S3B - Interestingness as a function of student uptake teacher", echo=FALSE, warning=FALSE}
+all$tushl<-ifelse(all$teacher_uptake_student>0.95,"high","low")
+all$suthl<-ifelse(all$student_uptake_teacher>0.95,"high","low")
+ggplot(all,aes(y=Int_avg,x=first_role,col=suthl))+geom_boxplot()+
+  stat_summary(aes(y=Int_avg,x=first_role,shape=suthl),fun="mean", geom="point", size=3, position=position_dodge())+ xlab("First speaker on page") + ylab("Interestingness") + guides(col=guide_legend(title="Student uptake teacher"), shape=guide_legend(title="Student uptake teacher"))
+
+```
+Figure S4 shows effects of teacher_uptake_student (A) and student_uptake_teacher (B) on average expected interestingness as a function of whether the first speaker displayed on a page was the teacher or the student.
+```{r uptake_expintA, fig.cap = "Figure S4A - Expected Interestingness as a function of teacher uptake student", echo=FALSE, warning=FALSE}
+all$tushl<-ifelse(all$teacher_uptake_student>0.95,"high","low")
+all$suthl<-ifelse(all$student_uptake_teacher>0.95,"high","low")
+ggplot(all,aes(y=ExpInt_avg,x=first_role,col=tushl))+geom_boxplot()+
+stat_summary(aes(y=Int_avg,x=first_role,shape=tushl),fun="mean", geom="point", size=3, position=position_dodge())+ xlab("First speaker on page") + ylab("Expected Interestingness") + guides(col=guide_legend(title="Teacher uptake student"), shape=guide_legend(title="Teacher uptake student"))
+```
+
+```{r uptake_expint, fig.cap = "Figure S4B - Expected Interestingness as a function of student uptake teacher", echo=FALSE, warning=FALSE}
+all$tushl<-ifelse(all$teacher_uptake_student>0.95,"high","low")
+all$suthl<-ifelse(all$student_uptake_teacher>0.95,"high","low")
+ggplot(all,aes(y=ExpInt_avg,x=first_role,col=suthl))+geom_boxplot()+
+  stat_summary(aes(y=Int_avg,x=first_role,shape=suthl),fun="mean", geom="point", size=3, position=position_dodge())+ xlab("First speaker on page") + ylab("Expected Interestingness") + guides(col=guide_legend(title="Student uptake teacher"), shape=guide_legend(title="Student uptake teacher"))
+
+```
+
+### Combined models
+Tables S2 (Interestingness) and S3 (Expected Interestingness) show the random effect estimates for the combined models reported in Tables 8 and 9 in the main manuscript, respectively.
+```{r combined_ranef, echo=FALSE}
+kable_minimal(kable(as.data.frame(VarCorr(combined_int)), caption=paste("Table S2",paste(format(formula(combined_int)),collapse = ''),sep=" - "), digits=3))
+kable_minimal(kable(as.data.frame(VarCorr(combined_expint)), caption=paste("Table S3",paste(format(formula(combined_int)),collapse = ''), sep=" - "), digits=3))
+
+```
+
+### Separate models for each feature category, including maximal random slopes that could be estimated.
+These are the full outputs (fixed effects, followed by random effects) for models combining selected features from each of the three categories (concreteness, comprehensibility, uptake) separately; these models include the maximal random slopes that could be estimated without convergence warnings. The model formula is reported for the Interstingness model; in all cases we used the same model formula for the Expected interestingness model
+
+```{r random_slopes, echo=FALSE}
+# Concreteness with slopes
+f4<-as.character(formula(combined_int_conc))
+ts4<-data.frame(Feature="Concreteness",Formula = paste(f4[2],f4[1],f4[3],sep=""))
+kable_minimal(kable(ts4, caption="Table S4: model formula for concreteness"))
+# Int fixed effects
+kable_minimal(kable(data.frame(coef(summary(combined_int_conc))), caption="Table S5: Concreteness predicting Interestingness - fixed effects", col.names=c("Feature","Beta","SE","t"), digits=3))
+# Int random effects
+kable_minimal(kable(as.data.frame(VarCorr(combined_int_conc)),  caption="Table S6: Concreteness predicting Interestingness - random effects", digits=3))
+# Exp Int fixed effects
+kable_minimal(kable(data.frame(coef(summary(combined_expint_conc))), caption="Table S7: Concreteness predicting Expected interestingness - fixed effects", col.names=c("Feature","Beta","SE","t"), digits=3))
+# Exp Int random effects
+kable_minimal(kable(as.data.frame(VarCorr(combined_expint_conc)), caption="Table S8: Concreteness predicting Expeccted interestingness - random effects", digits=3))
+
+#comprehensibility with slopes
+f9<-as.character(formula(combined_int_comp))
+ts9<-data.frame(Feature="Comprehensibility",Formula = paste(f9[2],f9[1],f9[3],sep=""))
+kable_minimal(kable(ts9, caption="Table S9: model formula for comprehensibility"))
+# Int fixed effects
+kable_minimal(kable(data.frame(coef(summary(combined_int_comp))), caption="Table S10: Comprehensibility predicting Interestingness - fixed effects", col.names=c("Feature","Beta","SE","t"), digits=3))
+# Int random effects
+kable_minimal(kable(as.data.frame(VarCorr(combined_int_comp)), caption="Table S11: Comprehensibility predicting Interestingness - random effects", digits=3))
+# Exp Int fixed effects
+kable_minimal(kable(data.frame(coef(summary(combined_expint_comp))), caption="Table S12: Comprehensibility predicting Expected interestingness - fixed effects", col.names=c("Feature","Beta","SE","t"), digits=3))
+# Exp Int random effects
+kable_minimal(kable(as.data.frame(VarCorr(combined_expint_comp)), caption="Table S13: Comprehensibility predicting Expeccted interestingness - random effects", digits=3))
+
+#uptake with slopes
+f14<-as.character(formula(combined_int_up))
+ts14<-data.frame(Feature="Uptake",Formula = paste(f14[2],f14[1],f14[3],sep=""))
+kable_minimal(kable(ts14, caption= "Table S14: modele formula for uptake"))
+# Int fixed effects
+kable_minimal(kable(data.frame(coef(summary(combined_int_up))), caption="Table S15: Uptake predicting Interestingness - fixed effects", col.names=c("Feature","Beta","SE","t"), digits=3))
+# Int random effects
+kable_minimal(kable(as.data.frame(VarCorr(combined_int_up)), caption="Table S16: Uptake predicting Interestingness - random effects", digits=3))
+# Exp Int fixed effects
+kable_minimal(kable(data.frame(coef(summary(combined_expint_up))), caption="Table S17: Uptake predicting Expected interestingness - fixed effects", col.names=c("Feature","Beta","SE","t"), digits=3))
+# Exp Int random effects
+kable_minimal(kable(as.data.frame(VarCorr(combined_expint_up)), caption="Table S18: Uptake predicting Expeccted interestingness - random effects", digits=3))
+
+```
+
+## Linguistic predictors of variance in interest ratings
+Figures S5-S14 show the relaion between linguistic features and variance in Interestingness ratings.
+```{r variance_plots, echo=FALSE, fig.cap=c("Figure S5 - Concreteness (_megahr)", "Figure S6 - Lexicon count", "Figure S7 - GIS score","Figure S8 - Coleman Liau Index","Figure S9 - Smog Index", "Figure S10 - Automated Readability Index", "Figure S11 - Spache Readability", "Figure S12 - Longest Common Subsequence (LCS, processed version)", "Figure S13 - Student Uptake Teacher","Figure S14 - Embeddings-based cosine similarity (raw version)"), warning=FALSE,message=FALSE}
+# Concreteness
+ggplot(all,aes(x=PCCNC_megahr,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+
+# Comprehensibility
+# lexicon count (quadratic), coleman-liau-index (linear), smog-index (linear), automated readability-index (linear), GIS (quadratic), spache_readability (linear)
+
+ggplot(all,aes(x=lexicon_count,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+ggplot(all,aes(x=gis,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+ggplot(all,aes(x=coleman_liau_index,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+ggplot(all,aes(x=smog_index,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+ggplot(all,aes(x=automated_readability_index,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+ggplot(all,aes(x=spache_readability,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+
+# Uptake: LCS_proc, student-uptake-teacher, cos-within-pages (raw)
+
+ggplot(all,aes(x=LCS_proc_d,y=Int_var)) + geom_boxplot()
+ggplot(all,aes(x=as.factor(suthl),y=Int_var)) + geom_boxplot()
+ggplot(all,aes(x=cos_within_page,y=Int_var)) + geom_jitter() + geom_smooth(method = "loess")
+
+```
+
+Tables S19 (Interestingness) and S20 (Expected Interestingness) report models predicting variance in human ratings.
+```{r variance_model, echo=FALSE}
+
+kable_minimal(kable(data.frame(coef(summary(combined_int_var))), caption=paste("Table S19",paste(format(formula(combined_int_var)),collapse = ''),sep=" - ") ,col.names=c("Feature","Beta","SE","t"), digits=3))
+
+kable_minimal(kable(data.frame(coef(summary(combined_expint_var))), caption=paste("Table S20",paste(format(formula(combined_expint_var)),collapse = ''),sep=" - ") ,col.names=c("Feature","Beta","SE","t"), digits=3))
+
+```
+
+## Proficiency
+Tables S21 (Interestingness) and S22 (Expected Interestingness) report models predicting human ratings from features and annotator/student proficiency.
+```{r proficiency,, echo=FALSE}
+kable_minimal(kable(data.frame(coef(summary(combined_int_as))), caption=paste("Table S21",paste(format(formula(combined_int_as)),collapse = ''), sep = " - "),col.names=c("Feature","Beta","SE","t"), digits=3))
+
+kable_minimal(kable(data.frame(coef(summary(combined_expint_as))), caption=paste("Table S22",paste(format(formula(combined_expint_as)),collapse = ''), sep= " - "),col.names=c("Feature","Beta","SE","t"), digits=3))
+
+```
+
+## Reward Prediction Error
+```{r rpe_figure, echo=FALSE,fig.cap="Figure S15: Relation between rpe and cosine similarity between pages", warning=FALSE,message=FALSE}
+ggplot(all_rpe,aes(human_rpe,cos_proc_pages)) +geom_jitter() + geom_smooth(method="loess")
+```
+
+```{r rpe_models, echo=FALSE}
+kable_minimal(kable(data.frame(coef(summary(cos_rpe_model_proc))), caption="Table S23: Linear effect of cosine similarity predictins rpe" ,col.names=c("Feature","Beta","SE","t"), digits=3))
+kable_minimal(kable(data.frame(coef(summary(cos_rpe_model_proc_q))), caption="Table S24: Linear and quadratic effect of cosine similarity predictins rpe" ,col.names=c("Feature","Beta","SE","t"), digits=3))
+```
+
+## Distributions of human and model ratings
+```{r distr, echo=FALSE, fig.cap="Figure S16: Distributions of human and model ratings"}
+knitr::include_graphics("https://raw.githubusercontent.com/mahathi-p/Interest-in-humans-and-llms/main/data/llm_ratings_distributions.png")
+```
+
+## Correlations between model error and human variance
+```{r model_error, echo=FALSE, fig.cap="Figure S17: Kendall Tau correlations between model error and variance in human intrest ratings"}
+all_error<-all_error[,c(32,4:16)]
+gge<-ggcorr(all_error,method=c("pairwise","kendall"), label=T,layout.exp=3, label_round=2, label_alpha=T, midpoint=0.1, size=0, label_size = 4)
+
+dat_e <- data.frame(x = seq(all_error), y = seq(all_error), 
+                  lbs = gsub("[0:9]B ","[0:9]B\n",gsub("_", " ", names(all_error)) ))
+gge + geom_text(data=dat_e, aes(x, y, label=lbs), nudge_x = 2, hjust=0.7, size=4) + theme(legend.text = element_text(size=10))
+
+```
+
