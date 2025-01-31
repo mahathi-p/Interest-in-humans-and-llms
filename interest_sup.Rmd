@@ -1,6 +1,6 @@
 ---
 title: "interest_sup"
-author: "Chiara Gambi"
+author: "XXXXX"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -8,7 +8,7 @@ output: html_document
 ```{r, code = readLines("interest_main.R"), include=FALSE}
 ```
 
-This file contains the Supplementary Materials for Parvatham, Tann, Pergola, & Gambi (2024). Conversational Interest between teachers and second
+This file contains the Supplementary Materials for XXXXX (2024). Conversational Interest between teachers and second
 language learners evaluated by human and LLMs.
 
 ## Linguistic predictors of human interest ratings.
